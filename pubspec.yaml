@@ -1,0 +1,47 @@
+name: studio_ghibli_app
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  cupertino_icons: ^1.0.6
+
+  url_launcher: ^6.2.5
+
+  http: ^1.2.1
+
+  flutter_bloc: ^8.0.1
+
+  equatable: ^2.0.5
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+  flutter_launcher_icons: ^0.13.1
+
+  flutter_cache_manager: ^3.1.2
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/ghibli_logo.png
+    - assets/placeholders/placeholder_image.png
+
+flutter_icons:
+  android: true
+  image_path: "assets/icons/sgl3.png"
+  adaptive_icon_background: "assets/icons/sgl3.png"
+  adaptive_icon_foreground: "assets/icons/sgl3.png"
