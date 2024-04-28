@@ -4,7 +4,10 @@ class ApiClient {
   final baseUrl = "https://ghibliapi.vercel.app";
 
   Future<http.Response> get(String endpoint) async {
-    final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
+    final uri = Uri.parse(endpoint).isAbsolute
+        ? Uri.parse(endpoint)
+        : Uri.parse('$baseUrl/$endpoint');
+    final response = await http.get(uri);
     if (response.statusCode == 200) {
       return response;
     } else {

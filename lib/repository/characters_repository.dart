@@ -38,6 +38,9 @@ class CharactersRepository {
     var futures = <Future<Character>>[];
 
     for (String url in urls) {
+      if (url == "https://ghibliapi.vercel.app/people/") {
+        continue;
+      }
       futures.add(fetchCharacterByUrl(url));
     }
 

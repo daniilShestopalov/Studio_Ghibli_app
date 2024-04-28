@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_bloc.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_event.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_state.dart';
+import 'package:studio_ghibli_app/models/character.dart';
 import 'package:studio_ghibli_app/models/film.dart';
+import 'package:studio_ghibli_app/repository/characters_repository.dart';
 
 class FilmDetailsPage extends StatelessWidget {
   final Film film;
@@ -9,6 +15,8 @@ class FilmDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final charactersRepository = RepositoryProvider.of<CharactersRepository>(context);
+    context.read<CharactersBloc>().add(LoadCharactersByUrlsEvent(film.people));
 
     return Scaffold(
       appBar: AppBar(
@@ -69,14 +77,88 @@ class FilmDetailsPage extends StatelessWidget {
                       const SizedBox(height: 20),
                       Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
                       Text(film.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
+                      ExpansionTile(
+                        title: const Text("Characters",  style: TextStyle(color: Colors.white),),
+                        children: [
+                          BlocBuilder<CharactersBloc, CharactersState>(
+                            builder: (context, state) {
+                              if (state is CharactersLoadingState) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (state is CharactersLoadedState) {
+                                if (state.characters.isEmpty) {
+                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+                                }
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: state.characters.length,
+                                    itemBuilder: (context, index) {
+                                      final character = state.characters[index];
+                                      return ListTile(
+                                        title: Text(
+                                          character.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                offset: const Offset(1.0, 1.0),
+                                                blurRadius: 3.0,
+                                                color: Colors.black.withOpacity(0.75),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'Age: ${character.age}',
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу персонажа
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (state is CharactersErrorState) {
+                                return Center(child: Text('Error: ${state.message}'));
+                              }
+                              return Container();
+                            },
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-
         ],
+      ),
+    );
+  }
+}
+
+class PlaceholderCharacterPage extends StatelessWidget {
+  final Character character;
+
+  const PlaceholderCharacterPage({super.key, required this.character});
+
+  @override
+  Widget build(BuildContext context) {
+    // Просто временный экран, пока вы не создадите реальный экран для персонажа
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(character.name),
+      ),
+      body: Center(
+        child: Text('Details for ${character.name}'),
       ),
     );
   }
