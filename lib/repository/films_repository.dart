@@ -37,6 +37,9 @@ class FilmsRepository {
     var futures = <Future<Film>>[];
 
     for (String url in urls) {
+      if (url == "https://ghibliapi.vercel.app/films/") {
+        continue;
+      }
       futures.add(fetchFilmDetails(url));
     }
 

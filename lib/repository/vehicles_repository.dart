@@ -37,6 +37,9 @@ class VehiclesRepository {
     var futures = <Future<Vehicle>>[];
 
     for (String url in urls) {
+      if (url == "https://ghibliapi.vercel.app/vehicles/") {
+        continue;
+      }
       futures.add(fetchVehicleByUrl(url));
     }
 

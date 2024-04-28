@@ -37,6 +37,9 @@ class SpeciesRepository {
     var futures = <Future<Species>>[];
 
     for (String url in urls) {
+      if (url == "https://ghibliapi.vercel.app/species/") {
+        continue;
+      }
       futures.add(fetchSpeciesByUrl(url));
     }
 

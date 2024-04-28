@@ -37,6 +37,9 @@ class LocationsRepository {
     var futures = <Future<Location>>[];
 
     for (String url in urls) {
+      if (url == "https://ghibliapi.vercel.app/locations/") {
+        continue;
+      }
       futures.add(fetchLocationByUrl(url));
     }
 

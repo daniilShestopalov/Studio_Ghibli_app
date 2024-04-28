@@ -144,22 +144,3 @@ class FilmDetailsPage extends StatelessWidget {
     );
   }
 }
-
-class PlaceholderCharacterPage extends StatelessWidget {
-  final Character character;
-
-  const PlaceholderCharacterPage({super.key, required this.character});
-
-  @override
-  Widget build(BuildContext context) {
-    // Просто временный экран, пока вы не создадите реальный экран для персонажа
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(character.name),
-      ),
-      body: Center(
-        child: Text('Details for ${character.name}'),
-      ),
-    );
-  }
-}
