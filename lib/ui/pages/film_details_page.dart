@@ -3,9 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_ghibli_app/bloc/characters/characters_bloc.dart';
 import 'package:studio_ghibli_app/bloc/characters/characters_event.dart';
 import 'package:studio_ghibli_app/bloc/characters/characters_state.dart';
-import 'package:studio_ghibli_app/models/character.dart';
+import 'package:studio_ghibli_app/bloc/locations/locations_bloc.dart';
+import 'package:studio_ghibli_app/bloc/locations/locations_event.dart';
+import 'package:studio_ghibli_app/bloc/locations/locations_state.dart';
+import 'package:studio_ghibli_app/bloc/species/species_bloc.dart';
+import 'package:studio_ghibli_app/bloc/species/species_event.dart';
+import 'package:studio_ghibli_app/bloc/species/species_state.dart';
+import 'package:studio_ghibli_app/bloc/vehicles/vehicles_bloc.dart';
+import 'package:studio_ghibli_app/bloc/vehicles/vehicles_event.dart';
+import 'package:studio_ghibli_app/bloc/vehicles/vehicles_state.dart';
 import 'package:studio_ghibli_app/models/film.dart';
-import 'package:studio_ghibli_app/repository/characters_repository.dart';
 
 class FilmDetailsPage extends StatelessWidget {
   final Film film;
@@ -15,8 +22,10 @@ class FilmDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final charactersRepository = RepositoryProvider.of<CharactersRepository>(context);
     context.read<CharactersBloc>().add(LoadCharactersByUrlsEvent(film.people));
+    context.read<SpeciesBloc>().add(LoadSpeciesByUrlsEvent(film.species));
+    context.read<LocationsBloc>().add(LoadLocationsByUrlsEvent(film.locations));
+    context.read<VehiclesBloc>().add(LoadVehiclesByUrlsEvent(film.vehicles));
 
     return Scaffold(
       appBar: AppBar(
@@ -126,6 +135,175 @@ class FilmDetailsPage extends StatelessWidget {
                                   ),
                                 );
                               } else if (state is CharactersErrorState) {
+                                return Center(child: Text('Error: ${state.message}'));
+                              }
+                              return Container();
+                            },
+                          ),
+                        ],
+                      ),
+                      ExpansionTile(
+                        title: const Text("Species",  style: TextStyle(color: Colors.white),),
+                        children: [
+                          BlocBuilder<SpeciesBloc, SpeciesState>(
+                            builder: (context, state) {
+                              if (state is SpeciesLoadingState) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (state is SpeciesLoadedState) {
+                                if (state.species.isEmpty) {
+                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+                                }
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: state.species.length,
+                                    itemBuilder: (context, index) {
+                                      final species = state.species[index];
+                                      return ListTile(
+                                        title: Text(
+                                          species.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                offset: const Offset(1.0, 1.0),
+                                                blurRadius: 3.0,
+                                                color: Colors.black.withOpacity(0.75),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'Classification: ${species.classification}',
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (state is SpeciesErrorState) {
+                                return Center(child: Text('Error: ${state.message}'));
+                              }
+                              return Container();
+                            },
+                          ),
+                        ],
+                      ),
+                      ExpansionTile(
+                        title: const Text("Locations",  style: TextStyle(color: Colors.white),),
+
+                        children: [
+                          BlocBuilder<LocationsBloc, LocationsState>(
+                            builder: (context, state) {
+                              if (state is LocationsLoadingState) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (state is LocationsLoadedState) {
+                                if (state.locations.isEmpty) {
+                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+                                }
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: state.locations.length,
+                                    itemBuilder: (context, index) {
+                                      final locations = state.locations[index];
+                                      return ListTile(
+                                        title: Text(
+                                          locations.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                offset: const Offset(1.0, 1.0),
+                                                blurRadius: 3.0,
+                                                color: Colors.black.withOpacity(0.75),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'Terrain: ${locations.terrain}',
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          // TODO: Действие при нажатии - пока пусто
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (state is LocationsErrorState) {
+                                return Center(child: Text('Error: ${state.message}'));
+                              }
+                              return Container();
+                            },
+                          ),
+                        ],
+                      ),
+                      ExpansionTile(
+                        title: const Text("Vehicles",  style: TextStyle(color: Colors.white),),
+                        children: [
+                          BlocBuilder<VehiclesBloc, VehiclesState>(
+                            builder: (context, state) {
+                              if (state is VehiclesLoadingState) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (state is VehiclesLoadedState) {
+                                if (state.vehicles.isEmpty) {
+                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+                                }
+                                return ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: state.vehicles.length,
+                                    itemBuilder: (context, index) {
+                                      final vehicles = state.vehicles[index];
+                                      return ListTile(
+                                        title: Text(
+                                          vehicles.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                offset: const Offset(1.0, 1.0),
+                                                blurRadius: 3.0,
+                                                color: Colors.black.withOpacity(0.75),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          'Vehicle class: ${vehicles.vehicleClass}',
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else if (state is VehiclesErrorState) {
                                 return Center(child: Text('Error: ${state.message}'));
                               }
                               return Container();
