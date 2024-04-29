@@ -49,6 +49,11 @@ class SpeciesRepository {
   }
 
   Future<Species> fetchSpeciesByUrl(String url) async {
+    if (url == "https://ghibliapi.vercel.app/species/") {
+      return Species(id: "0", name: "Not Specified", classification:
+      "Not Specified", eyeColors: "eyeColors", hairColors: "hairColors",
+          people: ["people"], films: ["films"], url: "url");
+    }
     final response = await apiClient.get(url);
     final Map<String, dynamic> speciesJson = json.decode(response.body);
 

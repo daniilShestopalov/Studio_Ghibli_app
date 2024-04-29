@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_ghibli_app/bloc/films/films_bloc.dart';
 import 'package:studio_ghibli_app/bloc/films/films_event.dart';
 import 'package:studio_ghibli_app/bloc/films/films_state.dart';
-import 'package:studio_ghibli_app/repository/films_repository.dart';
 import 'package:studio_ghibli_app/ui/pages/film_details_page.dart';
 
 class FilmsPage extends StatelessWidget {
@@ -11,14 +10,14 @@ class FilmsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<FilmsBloc>().add(LoadFilmsEvent());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Films'),
         backgroundColor: const Color(0xFF1F8DB8),
       ),
-      body: BlocProvider(
-        create: (context) => FilmsBloc(filmsRepository: RepositoryProvider.of<FilmsRepository>(context))..add(LoadFilmsEvent()),
-        child: Stack(
+      body: Stack(
           children: [
             Container(
               decoration: const BoxDecoration(
@@ -80,7 +79,7 @@ class FilmsPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+
     );
   }
 }

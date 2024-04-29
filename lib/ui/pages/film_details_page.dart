@@ -13,6 +13,7 @@ import 'package:studio_ghibli_app/bloc/vehicles/vehicles_bloc.dart';
 import 'package:studio_ghibli_app/bloc/vehicles/vehicles_event.dart';
 import 'package:studio_ghibli_app/bloc/vehicles/vehicles_state.dart';
 import 'package:studio_ghibli_app/models/film.dart';
+import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
 
 class FilmDetailsPage extends StatelessWidget {
   final Film film;
@@ -35,290 +36,318 @@ class FilmDetailsPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: <Widget>[
-          FadeInImage.assetNetwork(
-            placeholder: 'assets/placeholders/placeholder_image.png',
-            image: film.movieBanner,
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-            fadeInDuration: const Duration(milliseconds: 200),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black54],
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(top: kToolbarHeight + 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  height: 200,
-                  child: Center(child: Text('')),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('Title: ${film.title}', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),),
-                      const SizedBox(height: 10),
-                      Text('Original Title: ${film.originalTitle}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 5),
-                      Text('Original Title Romanised: ${film.originalTitleRomanised}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 10),
-                      Text('Director: ${film.director}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 5),
-                      Text('Producer: ${film.producer}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 10),
-                      Text('Release Date: ${film.releaseDate}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 5),
-                      Text('Running Time: ${film.runningTime} minutes', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 10),
-                      Text('Score: ${film.rtScore}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 20),
-                      Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
-                      Text(film.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                      ExpansionTile(
-                        title: const Text("Characters",  style: TextStyle(color: Colors.white),),
-                        children: [
-                          BlocBuilder<CharactersBloc, CharactersState>(
-                            builder: (context, state) {
-                              if (state is CharactersLoadingState) {
-                                return const Center(child: CircularProgressIndicator());
-                              } else if (state is CharactersLoadedState) {
-                                if (state.characters.isEmpty) {
-                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
-                                }
-                                return ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: state.characters.length,
-                                    itemBuilder: (context, index) {
-                                      final character = state.characters[index];
-                                      return ListTile(
-                                        title: Text(
-                                          character.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            shadows: [
-                                              Shadow(
-                                                offset: const Offset(1.0, 1.0),
-                                                blurRadius: 3.0,
-                                                color: Colors.black.withOpacity(0.75),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          'Age: ${character.age}',
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу персонажа
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (state is CharactersErrorState) {
-                                return Center(child: Text('Error: ${state.message}'));
-                              }
-                              return Container();
-                            },
-                          ),
-                        ],
-                      ),
-                      ExpansionTile(
-                        title: const Text("Species",  style: TextStyle(color: Colors.white),),
-                        children: [
-                          BlocBuilder<SpeciesBloc, SpeciesState>(
-                            builder: (context, state) {
-                              if (state is SpeciesLoadingState) {
-                                return const Center(child: CircularProgressIndicator());
-                              } else if (state is SpeciesLoadedState) {
-                                if (state.species.isEmpty) {
-                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
-                                }
-                                return ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: state.species.length,
-                                    itemBuilder: (context, index) {
-                                      final species = state.species[index];
-                                      return ListTile(
-                                        title: Text(
-                                          species.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            shadows: [
-                                              Shadow(
-                                                offset: const Offset(1.0, 1.0),
-                                                blurRadius: 3.0,
-                                                color: Colors.black.withOpacity(0.75),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          'Classification: ${species.classification}',
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (state is SpeciesErrorState) {
-                                return Center(child: Text('Error: ${state.message}'));
-                              }
-                              return Container();
-                            },
-                          ),
-                        ],
-                      ),
-                      ExpansionTile(
-                        title: const Text("Locations",  style: TextStyle(color: Colors.white),),
+      body: _buildBody(context, theme),
+    );
+  }
 
-                        children: [
-                          BlocBuilder<LocationsBloc, LocationsState>(
-                            builder: (context, state) {
-                              if (state is LocationsLoadingState) {
-                                return const Center(child: CircularProgressIndicator());
-                              } else if (state is LocationsLoadedState) {
-                                if (state.locations.isEmpty) {
-                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
-                                }
-                                return ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: state.locations.length,
-                                    itemBuilder: (context, index) {
-                                      final locations = state.locations[index];
-                                      return ListTile(
-                                        title: Text(
-                                          locations.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            shadows: [
-                                              Shadow(
-                                                offset: const Offset(1.0, 1.0),
-                                                blurRadius: 3.0,
-                                                color: Colors.black.withOpacity(0.75),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          'Terrain: ${locations.terrain}',
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          // TODO: Действие при нажатии - пока пусто
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (state is LocationsErrorState) {
-                                return Center(child: Text('Error: ${state.message}'));
-                              }
-                              return Container();
-                            },
-                          ),
-                        ],
-                      ),
-                      ExpansionTile(
-                        title: const Text("Vehicles",  style: TextStyle(color: Colors.white),),
-                        children: [
-                          BlocBuilder<VehiclesBloc, VehiclesState>(
-                            builder: (context, state) {
-                              if (state is VehiclesLoadingState) {
-                                return const Center(child: CircularProgressIndicator());
-                              } else if (state is VehiclesLoadedState) {
-                                if (state.vehicles.isEmpty) {
-                                  return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
-                                }
-                                return ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight: MediaQuery.of(context).size.height * 0.3,
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: state.vehicles.length,
-                                    itemBuilder: (context, index) {
-                                      final vehicles = state.vehicles[index];
-                                      return ListTile(
-                                        title: Text(
-                                          vehicles.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            shadows: [
-                                              Shadow(
-                                                offset: const Offset(1.0, 1.0),
-                                                blurRadius: 3.0,
-                                                color: Colors.black.withOpacity(0.75),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          'Vehicle class: ${vehicles.vehicleClass}',
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              } else if (state is VehiclesErrorState) {
-                                return Center(child: Text('Error: ${state.message}'));
-                              }
-                              return Container();
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+  Widget _buildBody(BuildContext context, ThemeData theme) {
+    return Stack(
+      children: <Widget>[
+        FadeInImage.assetNetwork(
+          placeholder: 'assets/placeholders/placeholder_image.png',
+          image: film.movieBanner,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+          fadeInDuration: const Duration(milliseconds: 200),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.transparent, Colors.black54],
             ),
           ),
-        ],
-      ),
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.only(top: kToolbarHeight + 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(
+                height: 200,
+                child: Center(child: Text('')),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildFilmDetails(context, theme)
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildFilmDetails(BuildContext context, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Title: ${film.title}', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),),
+        const SizedBox(height: 10),
+        Text('Original Title: ${film.originalTitle}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 5),
+        Text('Original Title Romanised: ${film.originalTitleRomanised}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 10),
+        Text('Director: ${film.director}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 5),
+        Text('Producer: ${film.producer}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 10),
+        Text('Release Date: ${film.releaseDate}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 5),
+        Text('Running Time: ${film.runningTime} minutes', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 10),
+        Text('Score: ${film.rtScore}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: 20),
+        Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Text(film.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
+        _buildCharacters(context),
+        _builtSpecies(context),
+        _builtLocations(context),
+        _builtVehicles(context),
+      ],
+    );
+  }
+
+  Widget _buildCharacters(BuildContext context) {
+    return ExpansionTile(
+      title: const Text("Characters",  style: TextStyle(color: Colors.white),),
+      children: [
+        BlocBuilder<CharactersBloc, CharactersState>(
+          builder: (context, state) {
+            if (state is CharactersLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is CharactersLoadedState) {
+              if (state.characters.isEmpty) {
+                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.characters.length,
+                  itemBuilder: (context, index) {
+                    final character = state.characters[index];
+                    return ListTile(
+                      title: Text(
+                        character.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1.0, 1.0),
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Age: ${character.age}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CharacterDetailsPage(character: character),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              );
+            } else if (state is CharactersErrorState) {
+              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
+            }
+            return Container();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _builtSpecies(BuildContext context) {
+    return ExpansionTile(
+      title: const Text("Species",  style: TextStyle(color: Colors.white),),
+      children: [
+        BlocBuilder<SpeciesBloc, SpeciesState>(
+          builder: (context, state) {
+            if (state is SpeciesLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is SpeciesLoadedState) {
+              if (state.species.isEmpty) {
+                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.species.length,
+                  itemBuilder: (context, index) {
+                    final species = state.species[index];
+                    return ListTile(
+                      title: Text(
+                        species.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1.0, 1.0),
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Classification: ${species.classification}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      onTap: () {
+                        // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                      },
+                    );
+                  },
+                ),
+              );
+            } else if (state is SpeciesErrorState) {
+              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
+            }
+            return Container();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _builtLocations(BuildContext context) {
+    return ExpansionTile(
+      title: const Text("Locations",  style: TextStyle(color: Colors.white),),
+
+      children: [
+        BlocBuilder<LocationsBloc, LocationsState>(
+          builder: (context, state) {
+            if (state is LocationsLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is LocationsLoadedState) {
+              if (state.locations.isEmpty) {
+                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.locations.length,
+                  itemBuilder: (context, index) {
+                    final locations = state.locations[index];
+                    return ListTile(
+                      title: Text(
+                        locations.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1.0, 1.0),
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Terrain: ${locations.terrain}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      onTap: () {
+                        // TODO: Действие при нажатии - пока пусто
+                      },
+                    );
+                  },
+                ),
+              );
+            } else if (state is LocationsErrorState) {
+              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
+            }
+            return Container();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _builtVehicles(BuildContext context) {
+    return ExpansionTile(
+      title: const Text("Vehicles",  style: TextStyle(color: Colors.white),),
+      children: [
+        BlocBuilder<VehiclesBloc, VehiclesState>(
+          builder: (context, state) {
+            if (state is VehiclesLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is VehiclesLoadedState) {
+              if (state.vehicles.isEmpty) {
+                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.vehicles.length,
+                  itemBuilder: (context, index) {
+                    final vehicles = state.vehicles[index];
+                    return ListTile(
+                      title: Text(
+                        vehicles.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1.0, 1.0),
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Vehicle class: ${vehicles.vehicleClass}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      onTap: () {
+                        // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                      },
+                    );
+                  },
+                ),
+              );
+            } else if (state is VehiclesErrorState) {
+              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
+            }
+            return Container();
+          },
+        ),
+      ],
     );
   }
 }

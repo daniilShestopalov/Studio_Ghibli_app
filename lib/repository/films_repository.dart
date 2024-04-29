@@ -40,7 +40,7 @@ class FilmsRepository {
       if (url == "https://ghibliapi.vercel.app/films/") {
         continue;
       }
-      futures.add(fetchFilmDetails(url));
+      futures.add(fetchFilmByUrl(url));
     }
 
     var films = await Future.wait(futures, eagerError: true);
