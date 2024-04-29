@@ -14,6 +14,7 @@ import 'package:studio_ghibli_app/bloc/vehicles/vehicles_event.dart';
 import 'package:studio_ghibli_app/bloc/vehicles/vehicles_state.dart';
 import 'package:studio_ghibli_app/models/film.dart';
 import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
+import 'package:studio_ghibli_app/ui/pages/location_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/species_details_page.dart';
 
 class FilmDetailsPage extends StatelessWidget {
@@ -104,9 +105,13 @@ class FilmDetailsPage extends StatelessWidget {
         Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
         Text(film.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
         _buildCharacters(),
+        const SizedBox(height: 5),
         _builtSpecies(),
+        const SizedBox(height: 5),
         _builtLocations(),
+        const SizedBox(height: 5),
         _builtVehicles(),
+        const SizedBox(height: 5),
       ],
     );
   }
@@ -258,10 +263,10 @@ class FilmDetailsPage extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: state.locations.length,
                   itemBuilder: (context, index) {
-                    final locations = state.locations[index];
+                    final location = state.locations[index];
                     return ListTile(
                       title: Text(
-                        locations.name,
+                        location.name,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -275,13 +280,17 @@ class FilmDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Terrain: ${locations.terrain}',
+                        'Terrain: ${location.terrain}',
                         style: const TextStyle(
                           color: Colors.white70,
                         ),
                       ),
                       onTap: () {
-                        // TODO: Действие при нажатии - пока пусто
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LocationsDetailsPage(location: location),
+                          ),
+                        );
                       },
                     );
                   },

@@ -6,17 +6,16 @@ import 'package:studio_ghibli_app/bloc/characters/characters_state.dart';
 import 'package:studio_ghibli_app/bloc/films/films_bloc.dart';
 import 'package:studio_ghibli_app/bloc/films/films_event.dart';
 import 'package:studio_ghibli_app/bloc/films/films_state.dart';
-import 'package:studio_ghibli_app/models/species.dart';
+import 'package:studio_ghibli_app/models/location.dart';
 import 'package:studio_ghibli_app/repository/characters_repository.dart';
 import 'package:studio_ghibli_app/repository/films_repository.dart';
 import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/film_details_page.dart';
-import 'package:studio_ghibli_app/utils/color_parser.dart';
 
-class SpeciesDetailsPage extends StatelessWidget {
-  final Species species;
+class LocationsDetailsPage extends StatelessWidget {
+  final Location location;
 
-  const SpeciesDetailsPage({super.key, required this.species});
+  const LocationsDetailsPage({super.key, required this.location});
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +26,18 @@ class SpeciesDetailsPage extends StatelessWidget {
         BlocProvider<CharactersBloc>(
           create: (context) => CharactersBloc(
             charactersRepository: RepositoryProvider.of<CharactersRepository>(context),
-          )..add(LoadCharactersByUrlsEvent(species.people)),
+          )..add(LoadCharactersByUrlsEvent(location.residents)),
         ),
         BlocProvider<FilmsBloc>(
           create: (context) => FilmsBloc(
             filmsRepository: RepositoryProvider.of<FilmsRepository>(context),
-          )..add(LoadFilmsByUrlsEvent(species.films)),
+          )..add(LoadFilmsByUrlsEvent(location.films)),
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(species.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
-          backgroundColor: Colors.black.withOpacity(0.5),
+          title: Text(location.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+          backgroundColor: const Color(0xFF1F8DB8),
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
@@ -52,11 +51,10 @@ class SpeciesDetailsPage extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: ColorParser.getColorListFromString(species.hairColors, species.eyeColors)
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/ghibli_logo.png'),
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -91,15 +89,15 @@ class SpeciesDetailsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Name: ${species.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Text('Name: ${location.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
         const SizedBox(height: 10),
-        Text('Classification: ${species.classification}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Climate: ${location.climate}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Eye colors: ${species.eyeColors}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Terrain: ${location.terrain}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Hair colors: ${species.hairColors}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Surface water: ${location.surfaceWater}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        _buildCharactersBlocBuilder(),
+        _buildResidentsBlocBuilder(),
         const SizedBox(height: 5),
         _buildFilmsExpansionTile(context),
         const SizedBox(height: 5),
@@ -107,9 +105,9 @@ class SpeciesDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCharactersBlocBuilder() {
+  Widget _buildResidentsBlocBuilder() {
     return ExpansionTile(
-      title: const Text("Characters",  style: TextStyle(color: Colors.white),),
+      title: const Text("Residents",  style: TextStyle(color: Colors.white),),
       children: [
         BlocBuilder<CharactersBloc, CharactersState>(
           builder: (context, state) {

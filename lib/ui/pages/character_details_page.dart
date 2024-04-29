@@ -104,6 +104,7 @@ class CharacterDetailsPage extends StatelessWidget {
         _buildSpeciesBlocBuilder(),
         const SizedBox(height: 5),
         _buildFilmsExpansionTile(context),
+        const SizedBox(height: 5),
       ],
     );
   }
