@@ -25,13 +25,6 @@ class MyApp extends StatelessWidget {
 
     final ApiClient apiClient = ApiClient();
 
-    /**final FilmsRepository filmsRepository = FilmsRepository(apiClient: apiClient);
-    final CharactersRepository charactersRepository = CharactersRepository(apiClient: apiClient);
-    final LocationsRepository locationsRepository = LocationsRepository(apiClient: apiClient);
-    final SpeciesRepository speciesRepository = SpeciesRepository(apiClient: apiClient);
-    final VehiclesRepository vehiclesRepository = VehiclesRepository(apiClient: apiClient);**/
-
-
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<FilmsRepository>(
@@ -86,43 +79,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
-
-    /**return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Studio Ghibli app',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF153A4F),
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-
-          ),
-        ),
-      ),
-      home: MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider<FilmsRepository>(
-            create: (context) => filmsRepository,
-          ),
-          RepositoryProvider<CharactersRepository>(
-            create: (context) => charactersRepository,
-          ),
-        ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<FilmsBloc>(
-              create: (context) => FilmsBloc(filmsRepository: filmsRepository),
-            ),
-            BlocProvider<CharactersBloc>(
-              create: (context) => CharactersBloc(charactersRepository: charactersRepository),
-            ),
-          ],
-          child: const FilmsPage(),
-        ),
-      ),
-    );**/
   }
 }
 
