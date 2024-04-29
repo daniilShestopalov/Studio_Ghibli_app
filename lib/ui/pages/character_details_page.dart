@@ -112,7 +112,7 @@ class CharacterDetailsPage extends StatelessWidget {
   Widget _buildSpeciesBlocBuilder() {
     return BlocBuilder<SpeciesBloc, SpeciesState>(
       builder: (context, state) {
-        if (state is SpeciesLoadingState) {
+        if (state is SpeciesDetailsLoadingState) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is SpeciesDetailsLoadedState) {
           return GestureDetector(

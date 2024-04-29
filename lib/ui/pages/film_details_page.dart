@@ -16,6 +16,7 @@ import 'package:studio_ghibli_app/models/film.dart';
 import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/location_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/species_details_page.dart';
+import 'package:studio_ghibli_app/ui/pages/vehicle_details_page.dart';
 
 class FilmDetailsPage extends StatelessWidget {
   final Film film;
@@ -288,7 +289,7 @@ class FilmDetailsPage extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => LocationsDetailsPage(location: location),
+                            builder: (context) => LocationDetailsPage(location: location),
                           ),
                         );
                       },
@@ -326,10 +327,10 @@ class FilmDetailsPage extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: state.vehicles.length,
                   itemBuilder: (context, index) {
-                    final vehicles = state.vehicles[index];
+                    final vehicle = state.vehicles[index];
                     return ListTile(
                       title: Text(
-                        vehicles.name,
+                        vehicle.name,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -343,13 +344,17 @@ class FilmDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Vehicle class: ${vehicles.vehicleClass}',
+                        'Vehicle class: ${vehicle.vehicleClass}',
                         style: const TextStyle(
                           color: Colors.white70,
                         ),
                       ),
                       onTap: () {
-                        // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => VehicleDetailsPage(vehicle: vehicle),
+                          ),
+                        );
                       },
                     );
                   },

@@ -6,16 +6,16 @@ import 'package:studio_ghibli_app/bloc/characters/characters_state.dart';
 import 'package:studio_ghibli_app/bloc/films/films_bloc.dart';
 import 'package:studio_ghibli_app/bloc/films/films_event.dart';
 import 'package:studio_ghibli_app/bloc/films/films_state.dart';
-import 'package:studio_ghibli_app/models/location.dart';
+import 'package:studio_ghibli_app/models/vehicle.dart';
 import 'package:studio_ghibli_app/repository/characters_repository.dart';
 import 'package:studio_ghibli_app/repository/films_repository.dart';
 import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/film_details_page.dart';
 
-class LocationDetailsPage extends StatelessWidget {
-  final Location location;
+class VehicleDetailsPage extends StatelessWidget {
+  final Vehicle vehicle;
 
-  const LocationDetailsPage({super.key, required this.location});
+  const VehicleDetailsPage({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +26,17 @@ class LocationDetailsPage extends StatelessWidget {
         BlocProvider<CharactersBloc>(
           create: (context) => CharactersBloc(
             charactersRepository: RepositoryProvider.of<CharactersRepository>(context),
-          )..add(LoadCharactersByUrlsEvent(location.residents)),
+          )..add(LoadCharacterDetailsByUrlEvent(vehicle.pilot)),
         ),
         BlocProvider<FilmsBloc>(
           create: (context) => FilmsBloc(
             filmsRepository: RepositoryProvider.of<FilmsRepository>(context),
-          )..add(LoadFilmsByUrlsEvent(location.films)),
+          )..add(LoadFilmsByUrlsEvent(vehicle.films)),
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(location.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+          title: Text(vehicle.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
           backgroundColor: const Color(0xFF1F8DB8),
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -89,15 +89,15 @@ class LocationDetailsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Name: ${location.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Text('Name: ${vehicle.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
         const SizedBox(height: 10),
-        Text('Climate: ${location.climate}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Vehicle class: ${vehicle.vehicleClass}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Terrain: ${location.terrain}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Length: ${vehicle.length}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Surface water: ${location.surfaceWater}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-        const SizedBox(height: 5),
-        _buildResidentsBlocBuilder(),
+        Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Text(vehicle.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
+        _buildPilotBlocBuilder(),
         const SizedBox(height: 5),
         _buildFilmsExpansionTile(context),
         const SizedBox(height: 5),
@@ -105,66 +105,27 @@ class LocationDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildResidentsBlocBuilder() {
-    return ExpansionTile(
-      title: const Text("Residents",  style: TextStyle(color: Colors.white),),
-      children: [
-        BlocBuilder<CharactersBloc, CharactersState>(
-          builder: (context, state) {
-            if (state is CharactersLoadingState) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is CharactersLoadedState) {
-              if (state.characters.isEmpty) {
-                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
-              }
-              return ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.3,
-                ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.characters.length,
-                  itemBuilder: (context, index) {
-                    final character = state.characters[index];
-                    return ListTile(
-                      title: Text(
-                        character.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              offset: const Offset(1.0, 1.0),
-                              blurRadius: 3.0,
-                              color: Colors.black.withOpacity(0.75),
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Age: ${character.age}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-                      onTap: (){
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CharacterDetailsPage(character: character),
-                          ),
-                        );
-                      },
-                    );
-                  },
+  Widget _buildPilotBlocBuilder() {
+    return BlocBuilder<CharactersBloc, CharactersState>(
+      builder: (context, state) {
+        if (state is CharacterDetailsLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is CharacterDetailsLoadedState) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CharacterDetailsPage(character: state.characterDetails),
                 ),
               );
-            } else if (state is CharactersErrorState) {
-              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
-            }
-            return Container();
-          },
-        ),
-      ],
+            },
+            child: Text('Pilot: ${state.characterDetails.name}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
+          );
+        } else if (state is CharactersErrorState) {
+          return Text('Pilot: Error: ${state.message}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white));
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
