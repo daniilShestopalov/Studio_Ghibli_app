@@ -14,6 +14,7 @@ import 'package:studio_ghibli_app/bloc/vehicles/vehicles_event.dart';
 import 'package:studio_ghibli_app/bloc/vehicles/vehicles_state.dart';
 import 'package:studio_ghibli_app/models/film.dart';
 import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
+import 'package:studio_ghibli_app/ui/pages/species_details_page.dart';
 
 class FilmDetailsPage extends StatelessWidget {
   final Film film;
@@ -102,15 +103,15 @@ class FilmDetailsPage extends StatelessWidget {
         const SizedBox(height: 20),
         Text('Description:', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
         Text(film.description, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
-        _buildCharacters(context),
-        _builtSpecies(context),
-        _builtLocations(context),
-        _builtVehicles(context),
+        _buildCharacters(),
+        _builtSpecies(),
+        _builtLocations(),
+        _builtVehicles(),
       ],
     );
   }
 
-  Widget _buildCharacters(BuildContext context) {
+  Widget _buildCharacters() {
     return ExpansionTile(
       title: const Text("Characters",  style: TextStyle(color: Colors.white),),
       children: [
@@ -173,7 +174,7 @@ class FilmDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _builtSpecies(BuildContext context) {
+  Widget _builtSpecies() {
     return ExpansionTile(
       title: const Text("Species",  style: TextStyle(color: Colors.white),),
       children: [
@@ -216,7 +217,11 @@ class FilmDetailsPage extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        // TODO: Действие при нажатии - пока пусто, в будущем переход на страницу вида
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SpeciesDetailsPage(species: species),
+                          ),
+                        );
                       },
                     );
                   },
@@ -232,7 +237,7 @@ class FilmDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _builtLocations(BuildContext context) {
+  Widget _builtLocations() {
     return ExpansionTile(
       title: const Text("Locations",  style: TextStyle(color: Colors.white),),
 
@@ -292,7 +297,7 @@ class FilmDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _builtVehicles(BuildContext context) {
+  Widget _builtVehicles() {
     return ExpansionTile(
       title: const Text("Vehicles",  style: TextStyle(color: Colors.white),),
       children: [

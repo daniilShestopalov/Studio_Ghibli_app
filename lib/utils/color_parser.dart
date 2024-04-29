@@ -22,4 +22,14 @@ class ColorParser {
   static Color getColorFromString(String colorName) {
      return _colorMap[colorName] ?? Colors.transparent;
   }
+
+  static List<Color> getColorListFromString(String colorsString1, String colorsString2) {
+    List<String> colorNames1 = colorsString1.split(',').map((e) => e.trim()).toList();
+    List<String> colorNames2 = colorsString2.split(',').map((e) => e.trim()).toList();
+    List combinedColorNames = <dynamic>{...colorNames1, ...colorNames2}.toList();
+    List<Color> colorList = combinedColorNames.map((colorName) {
+      return ColorParser.getColorFromString(colorName);
+    }).toList();
+    return colorList;
+  }
 }

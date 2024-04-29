@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_bloc.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_event.dart';
+import 'package:studio_ghibli_app/bloc/characters/characters_state.dart';
 import 'package:studio_ghibli_app/bloc/films/films_bloc.dart';
 import 'package:studio_ghibli_app/bloc/films/films_event.dart';
 import 'package:studio_ghibli_app/bloc/films/films_state.dart';
-import 'package:studio_ghibli_app/bloc/species/species_bloc.dart';
-import 'package:studio_ghibli_app/bloc/species/species_event.dart';
-import 'package:studio_ghibli_app/bloc/species/species_state.dart';
-import 'package:studio_ghibli_app/models/character.dart';
+import 'package:studio_ghibli_app/models/species.dart';
+import 'package:studio_ghibli_app/repository/characters_repository.dart';
 import 'package:studio_ghibli_app/repository/films_repository.dart';
-import 'package:studio_ghibli_app/repository/species_repository.dart';
+import 'package:studio_ghibli_app/ui/pages/character_details_page.dart';
 import 'package:studio_ghibli_app/ui/pages/film_details_page.dart';
-import 'package:studio_ghibli_app/ui/pages/species_details_page.dart';
 import 'package:studio_ghibli_app/utils/color_parser.dart';
 
-class CharacterDetailsPage extends StatelessWidget {
-  final Character character;
+class SpeciesDetailsPage extends StatelessWidget {
+  final Species species;
 
-  const CharacterDetailsPage({super.key, required this.character});
+  const SpeciesDetailsPage({super.key, required this.species});
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +24,20 @@ class CharacterDetailsPage extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SpeciesBloc>(
-          create: (context) => SpeciesBloc(
-            speciesRepository: RepositoryProvider.of<SpeciesRepository>(context),
-          )..add(LoadSpeciesDetailsByUrlEvent(character.species)),
+        BlocProvider<CharactersBloc>(
+          create: (context) => CharactersBloc(
+            charactersRepository: RepositoryProvider.of<CharactersRepository>(context),
+          )..add(LoadCharactersByUrlsEvent(species.people)),
         ),
         BlocProvider<FilmsBloc>(
           create: (context) => FilmsBloc(
             filmsRepository: RepositoryProvider.of<FilmsRepository>(context),
-          )..add(LoadFilmsByUrlsEvent(character.films)),
+          )..add(LoadFilmsByUrlsEvent(species.films)),
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(character.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+          title: Text(species.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
           backgroundColor: Colors.black.withOpacity(0.5),
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -56,7 +56,7 @@ class CharacterDetailsPage extends StatelessWidget {
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [ColorParser.getColorFromString(character.hairColor), ColorParser.getColorFromString(character.eyeColor)]
+                colors: ColorParser.getColorListFromString(species.hairColors, species.eyeColors)
             ),
           ),
         ),
@@ -91,44 +91,81 @@ class CharacterDetailsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Name: ${character.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+        Text('Name: ${species.name}', style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
         const SizedBox(height: 10),
-        Text('Gender: ${character.gender}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Classification: ${species.classification}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Age: ${character.age}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Eye colors: ${species.eyeColors}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Eye color: ${character.eyeColor}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        Text('Hair colors: ${species.hairColors}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: 5),
-        Text('Hair color: ${character.hairColor}', style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
-        const SizedBox(height: 5),
-        _buildSpeciesBlocBuilder(),
+        _buildCharactersBlocBuilder(),
         const SizedBox(height: 5),
         _buildFilmsExpansionTile(context),
       ],
     );
   }
 
-  Widget _buildSpeciesBlocBuilder() {
-    return BlocBuilder<SpeciesBloc, SpeciesState>(
-      builder: (context, state) {
-        if (state is SpeciesLoadingState) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is SpeciesDetailsLoadedState) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SpeciesDetailsPage(species: state.speciesDetails),
+  Widget _buildCharactersBlocBuilder() {
+    return ExpansionTile(
+      title: const Text("Characters",  style: TextStyle(color: Colors.white),),
+      children: [
+        BlocBuilder<CharactersBloc, CharactersState>(
+          builder: (context, state) {
+            if (state is CharactersLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is CharactersLoadedState) {
+              if (state.characters.isEmpty) {
+                return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.characters.length,
+                  itemBuilder: (context, index) {
+                    final character = state.characters[index];
+                    return ListTile(
+                      title: Text(
+                        character.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(1.0, 1.0),
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Age: ${character.age}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      onTap: (){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CharacterDetailsPage(character: character),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               );
-            },
-            child: Text('Species: ${state.speciesDetails.name}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
-          );
-        } else if (state is SpeciesErrorState) {
-          return Text('Species: Error: ${state.message}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white));
-        }
-        return const SizedBox.shrink();
-      },
+            } else if (state is CharactersErrorState) {
+              return Center(child: Text('Error: ${state.message}', style: const TextStyle(color: Colors.white),));
+            }
+            return Container();
+          },
+        ),
+      ],
     );
   }
 
